@@ -57,6 +57,10 @@ class Synchronizer():
         Synchronizes all files in a directory from one place to the other.
         """
         
+        if os.path.isfile(self.directory):
+            self._copy_file(self.directory)
+            return
+        
         for root, dirs, files in os.walk(self.directory):
             for dir in dirs:
                 path = os.path.join(root, dir)
@@ -83,12 +87,12 @@ class Synchronizer():
         """
         
         relative = os.path.relpath(path, self.directory)
-        target = os.path.join(self.destination, relative)
+        target = os.path.join(self.destination, relative) if os.path.isdir(self.directory) else self.destination + os.path.basename(path)
 
         if os.path.isdir(path):
             os.makedirs(target, exist_ok = True)
         else:
-            os.makedirs(os.path.join(self.destination, os.path.dirname(relative)), exist_ok = True)
+            os.makedirs(os.path.basename(target), exist_ok = True)
             
             with open(path, "rb") as f:
                 content = f.read()
