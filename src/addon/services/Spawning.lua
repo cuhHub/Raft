@@ -35,7 +35,7 @@
     A service that manages the spawning of players.
 ]]
 ---@class Spawning: NoirService
----@field JoinConnection NoirConnection
+---@field JoinConnection NoirConnection A connection to the PlayerService's `onJoin` event
 Raft.Spawning = Noir.Services:CreateService(
     "Spawning"
 )
@@ -59,7 +59,7 @@ end
 ]]
 ---@param callback fun(pos: SWMatrix)
 function Raft.Spawning:GetSpawnPoint(callback)
-    local raft = Raft.Rafts:GetServerRaft()
+    local raft = Raft.Rafts:GetMainRaft()
 
     if raft:IsLoaded() then
         local spawn = raft:GetSpawnPoint()
@@ -87,14 +87,6 @@ end
 ]]
 ---@param player NoirPlayer
 function Raft.Spawning:SpawnPlayer(player)
-    -- Get raft
-    local raft = Raft.Rafts:GetServerRaft()
-
-    if not raft then
-        error("Spawning", "Failed to get server raft.")
-    end
-
-    -- Get spawn
     self:GetSpawnPoint(function(pos)
         player:Teleport(pos)
     end)
