@@ -44,7 +44,7 @@ Raft.Rafts = Noir.Services:CreateService(
     Called when the service is initialized.
 ]]
 function Raft.Rafts:ServiceInit()
-    self.Raft = Raft.Classes.Raft:New(matrix.translation(10000, 0, 0), 0)
+    self.Raft = Raft.Classes.Raft:New(matrix.translation(10000, 0, 0), 1)
 
     if not self.Raft.Vehicle then
         self.Raft:Spawn()
