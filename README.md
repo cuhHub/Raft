@@ -13,6 +13,3 @@ Steam Workshop Link: N/A
 
 ## ✨ Credit
 - [Cuh4](https://github.com/Cuh4)
-
-## 📺 Preview
-![Addon Preview](imgs/1.gif)
