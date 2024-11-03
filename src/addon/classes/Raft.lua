@@ -98,10 +98,18 @@ function Raft.Classes.Raft:IsLoaded()
 end
 
 --[[
+    Returns the position of this raft.
+]]
+---@return SWMatrix
+function Raft.Classes.Raft:GetPosition()
+    return self.Vehicle:GetPosition()
+end
+
+--[[
     Get the spawn point of this raft.<br>
     Can only be called when the raft vehicle has loaded.
 ]]
----@return SWMatrix|nil
+---@return SWMatrix
 function Raft.Classes.Raft:GetSpawnPoint()
     local data = self.Vehicle.PrimaryBody:GetSign("Spawn")
 
