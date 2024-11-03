@@ -55,16 +55,47 @@ function Raft.Spawning:ServiceStart()
 end
 
 --[[
+    Returns the spawn point of the main raft.
+]]
+---@param callback fun(pos: SWMatrix)
+function Raft.Spawning:GetSpawnPoint(callback)
+    local raft = Raft.Rafts:GetServerRaft()
+
+    if raft:IsLoaded() then
+        local spawn = raft:GetSpawnPoint()
+
+        if not spawn then
+            error("Spawning", "Raft is loaded, but the spawn point is nil. The spawn sign may be missing.")
+        end
+
+        return callback(spawn)
+    else
+        raft.Vehicle.PrimaryBody.OnLoad:Once(function()
+            local spawn = raft:GetSpawnPoint()
+
+            if not spawn then
+                error("Spawning", "Raft loaded after a bit, but the spawn point is nil. The spawn sign may be missing.")
+            end
+
+            return callback(spawn)
+        end)
+    end
+end
+
+--[[
     Teleports a player to the Raft.
 ]]
 ---@param player NoirPlayer
 function Raft.Spawning:SpawnPlayer(player)
-    local raft = Raft.Rafts:GetRaft()
-    local spawn = raft:GetSpawnPoint()
+    -- Get raft
+    local raft = Raft.Rafts:GetServerRaft()
 
-    if not spawn then
-        error("Spawning", "Failed to get spawn point from raft.")
+    if not raft then
+        error("Spawning", "Failed to get server raft.")
     end
 
-    player:Teleport(spawn)
+    -- Get spawn
+    self:GetSpawnPoint(function(pos)
+        player:Teleport(pos)
+    end)
 end
