@@ -32,12 +32,14 @@
 -------------------------------
 
 --[[
-    A service that manages the server's Raft.
+    A service that manages all spawned rafts.
 ]]
 ---@class Rafts: NoirService
----@field Rafts table<integer, Raft>
+---@field Rafts table<integer, Raft> All rafts in the game
+---@field RAFT_COMPONENT_ID integer The component ID used by the service when spawning rafts. This is constant
+---@field DEFAULT_RAFT_SPAWN SWMatrix The default spawn position for the main raft
 ---
----@field OnTickConnection NoirTask
+---@field OnTickConnection NoirTask A connection to the onTick game callback
 Raft.Rafts = Noir.Services:CreateService(
     "Rafts"
 )
@@ -50,6 +52,9 @@ Raft.Rafts.StartPriority = 0
 ]]
 function Raft.Rafts:ServiceInit()
     self.Rafts = {} -- this is a table in case i plan on adding multiple rafts
+
+    self.RAFT_COMPONENT_ID = 3
+    self.DEFAULT_RAFT_SPAWN = matrix.translation(0, 0, 1000)
 end
 
 --[[
@@ -59,6 +64,11 @@ function Raft.Rafts:ServiceStart()
     -- Load rafts
     self:LoadRafts()
 
+    -- Spawn main raft
+    if not self:GetMainRaft() then
+        self:SpawnRaft(self.DEFAULT_RAFT_SPAWN)
+    end
+
     -- Spawn raft vehicles if needed
     for _, raft in pairs(self:GetRafts()) do
         if not raft.Vehicle then
@@ -67,11 +77,20 @@ function Raft.Rafts:ServiceStart()
     end
 
     -- Update rafts every tick
-    self.OnTickConnection = Noir.Services.TaskService:AddTickTask(function()
+    self.OnTickConnection = Noir.Callbacks:Connect("onTick", function()
         for _, raft in pairs(self:GetRafts()) do
             raft:Update()
         end
-    end, 1)
+    end)
+end
+
+--[[
+    Spawn a raft.
+]]
+---@param at SWMatrix
+function Raft.Rafts:SpawnRaft(at)
+    local raft = Raft.Classes.Raft:New(at, self.RAFT_COMPONENT_ID)
+    self:RegisterRaft(raft)
 end
 
 --[[
@@ -79,7 +98,7 @@ end
 ]]
 ---@param raft Raft
 function Raft.Rafts:RegisterRaft(raft)
-    table.insert(self:GetRafts(), raft)
+    table.insert(self.Rafts, raft)
 end
 
 --[[
@@ -91,18 +110,18 @@ function Raft.Rafts:GetRafts()
 end
 
 --[[
-    Returns the server's Raft.
+    Returns the main raft.
 ]]
 ---@return Raft
-function Raft.Rafts:GetServerRaft()
-    return self.Rafts[0]
+function Raft.Rafts:GetMainRaft()
+    return self.Rafts[1]
 end
 
 --[[
     Returns all saved rafts.
 ]]
 ---@return table<integer, RaftSerialized>
-function Raft.Rafts:GetLoadedRafts()
+function Raft.Rafts:GetSavedRafts()
     local loadedRafts = {}
 
     for _, raft in pairs(self:GetRafts()) do
@@ -129,7 +148,7 @@ end
     Loads all rafts from g_savedata if possible.
 ]]
 function Raft.Rafts:LoadRafts()
-    local serializedRafts = self:GetLoadedRafts()
+    local serializedRafts = self:GetSavedRafts()
 
     if not serializedRafts then
         self:SaveRafts()
