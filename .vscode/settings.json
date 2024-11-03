@@ -1,0 +1,6 @@
+{
+    "Lua.workspace.ignoreDir": [
+        ".vscode",
+        "src/addon/script.lua"
+    ]
+}
