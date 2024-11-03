@@ -41,7 +41,7 @@
 ---@field Vehicle NoirVehicle The vehicle this raft is attached to
 ---@field Level integer The level of the raft
 ---@field MaxLevel integer The maximum level of the raft
----@field Storage Storage -- The storage for this raft
+---@field Storage Storage The storage for this raft
 ---
 ---@field OnLevelUp NoirEvent Fired when this Raft levels up
 Raft.Classes.Raft = Noir.Class("Raft")
@@ -63,7 +63,7 @@ function Raft.Classes.Raft:Init(spawnPos, componentID)
 end
 
 --[[
-    Update this Raft. This is to be called every tick.
+    Update this raft. This is to be called every tick.
 ]]
 function Raft.Classes.Raft:Update()
     self.Vehicle.PrimaryBody:SetBattery("Battery", 100)
@@ -71,8 +71,16 @@ function Raft.Classes.Raft:Update()
 end
 
 --[[
-    Get the spawn point of this Raft.<br>
-    Can only be called when the Raft vehicle has loaded.
+    Returns if this raft is loaded or not.
+]]
+---@return boolean
+function Raft.Classes.Raft:IsLoaded()
+    return self.Vehicle and self.Vehicle.PrimaryBody:IsSimulating()
+end
+
+--[[
+    Get the spawn point of this raft.<br>
+    Can only be called when the raft vehicle has loaded.
 ]]
 ---@return SWMatrix|nil
 function Raft.Classes.Raft:GetSpawnPoint()
@@ -86,7 +94,7 @@ function Raft.Classes.Raft:GetSpawnPoint()
 end
 
 --[[
-    Levels this Raft up.
+    Levels this raft up.
 ]]
 function Raft.Classes.Raft:SetLevel()
     if self.Level >= self.MaxLevel then
@@ -98,7 +106,7 @@ function Raft.Classes.Raft:SetLevel()
 end
 
 --[[
-    Set the vehicle of this Raft.
+    Set the vehicle of this raft.
 ]]
 ---@return NoirVehicle
 function Raft.Classes.Raft:Spawn()
@@ -111,30 +119,40 @@ function Raft.Classes.Raft:Spawn()
 end
 
 --[[
-    Serializes this Raft into g_savedata format.
+    Serializes this raft into g_savedata format.
 ]]
 ---@return RaftSerialized
 function Raft.Classes.Raft:Serialize()
     return {
+        SpawnPosition = self.SpawnPosition,
+        ComponentID = self.ComponentID,
         VehicleID = self.Vehicle and self.Vehicle.ID,
         Level = self.Level,
+        MaxLevel = self.MaxLevel,
         Storage = self.Storage:Serialize()
     }
 end
 
 --[[
-    Deserializes this Raft from g_savedata format.
+    Creates a raft object from a serialized raft.
+    *staticmethod*
 ]]
 ---@param data RaftSerialized
+---@return Raft
 function Raft.Classes.Raft:FromSerialized(data)
-    self.Vehicle = data.VehicleID and Noir.Services.VehicleService:GetVehicle(data.VehicleID)
-
-    if not self.Vehicle then
-        error("Raft", "Could not find vehicle from serialized raft.")
+    if self._IsObject then
+        error("Raft", "Cannot create an object from an object.")
     end
 
-    self.Level = data.Level
-    self.Storage = data.Storage
+    local raft = self:New(data.SpawnPosition, data.ComponentID)
+    raft.SpawnPosition = data.SpawnPosition
+    raft.ComponentID = data.ComponentID
+    raft.Vehicle = data.VehicleID and Noir.Services.VehicleService:GetVehicle(data.VehicleID)
+    raft.Level = data.Level
+    raft.MaxLevel = data.MaxLevel
+    raft.Storage = data.Storage
+
+    return raft
 end
 
 -------------------------------
@@ -145,6 +163,9 @@ end
     A serialized Raft object.
 ]]
 ---@class RaftSerialized
+---@field SpawnPosition SWMatrix
+---@field ComponentID integer
 ---@field VehicleID integer
 ---@field Level integer
+---@field MaxLevel integer
 ---@field Storage nil -- TODO: storage
