@@ -52,10 +52,11 @@ end
     Called when the service is started.
 ]]
 function Raft.Rafts:ServiceStart()
-    self:LoadRaft()
+    self:LoadRaft() -- saves if no raft to load
 
     if not self.Raft.Vehicle then
         self.Raft:Spawn()
+        self:SaveRaft()
     end
 end
 
