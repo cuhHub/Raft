@@ -58,6 +58,14 @@ end
 -- todo: methods for adding items, removing items, etc
 
 --[[
+    Returns the total amount of items in this storage.
+]]
+---@return integer
+function Raft.Classes.Storage:GetItemCount()
+    return Noir.Libraries.Table:Length(self.Items)
+end
+
+--[[
     Returns a table of all items in this storage but serialized.
 ]]
 ---@return table<integer, ItemSerialized>
@@ -84,28 +92,36 @@ end
 
 --[[
     Converts serialized items into deserialized ones.
+    *staticmethod*
 ]]
 ---@param items table<integer, ItemSerialized>
 function Raft.Classes.Storage:DeserializeItems(items)
     local deserializedItems = {}
 
-    for _, item in pairs(items) do
-        local deserializedItem = Raft.Classes.Item:New()
-        deserializedItem:FromSerialized(item)
-
-        deserializedItems[deserializedItem.ID] = deserializedItem
+    for _, data in pairs(items) do
+        local item = Raft.Classes.Item:FromSerialized(data)
+        deserializedItems[item.ID] = item
     end
 
     return deserializedItems
 end
 
 --[[
-    Deserializes this Storage from g_savedata format.
+    Creates a storage object from a serialized storage.
+    *staticmethod*
 ]]
 ---@param data StorageSerialized
+---@return Storage
 function Raft.Classes.Storage:FromSerialized(data)
-    self.ItemLimit = data.ItemLimit
-    self.Items = self:DeserializeItems(data.Items)
+    if self._IsObject then
+        error("Storage", "Cannot create an object from an object.")
+    end
+
+    local storage = self:New(data.ItemLimit)
+    storage.ItemLimit = data.ItemLimit
+    storage.Items = self:DeserializeItems(data.Items)
+
+    return storage
 end
 
 -------------------------------
