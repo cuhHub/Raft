@@ -50,3 +50,12 @@ Raft.Classes = {}
 error = function(title, message, ...)
     return Noir.Libraries.Logging:Error(title, message, true, ...)
 end
+
+--[[
+    Prints a message.
+]]
+---@param message string
+---@param ... any
+print = function(message, ...)
+    return Noir.Libraries.Logging:Info("Print", message, ...)
+end
