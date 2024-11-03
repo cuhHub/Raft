@@ -62,22 +62,10 @@ function Raft.Spawning:GetSpawnPoint(callback)
     local raft = Raft.Rafts:GetMainRaft()
 
     if raft:IsLoaded() then
-        local spawn = raft:GetSpawnPoint()
-
-        if not spawn then
-            error("Spawning", "Raft is loaded, but the spawn point is nil. The spawn sign may be missing.")
-        end
-
-        return callback(spawn)
+        return callback(raft:GetSpawnPoint())
     else
         raft.Vehicle.PrimaryBody.OnLoad:Once(function()
-            local spawn = raft:GetSpawnPoint()
-
-            if not spawn then
-                error("Spawning", "Raft loaded after a bit, but the spawn point is nil. The spawn sign may be missing.")
-            end
-
-            return callback(spawn)
+            return callback(raft:GetSpawnPoint())
         end)
     end
 end
