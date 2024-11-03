@@ -41,7 +41,11 @@
 ---
 ---@field OnTickConnection NoirTask A connection to the onTick game callback
 Raft.Rafts = Noir.Services:CreateService(
-    "Rafts"
+    "Rafts",
+    false,
+    "Handles the tracking and spawning of rafts.",
+    "Handles the tracking and spawning of rafts.",
+    {"Cuh4"}
 )
 
 Raft.Rafts.InitPriority = 0

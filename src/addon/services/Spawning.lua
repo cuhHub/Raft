@@ -37,7 +37,11 @@
 ---@class Spawning: NoirService
 ---@field JoinConnection NoirConnection A connection to the PlayerService's `onJoin` event
 Raft.Spawning = Noir.Services:CreateService(
-    "Spawning"
+    "Spawning",
+    false,
+    "Handles the spawning of players.",
+    "Handles the spawning of players.",
+    {"Cuh4"}
 )
 
 --[[
