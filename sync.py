@@ -92,7 +92,7 @@ class Synchronizer():
         if os.path.isdir(path):
             os.makedirs(target, exist_ok = True)
         else:
-            os.makedirs(os.path.basename(target), exist_ok = True)
+            os.makedirs(os.path.dirname(target), exist_ok = True)
             
             with open(path, "rb") as f:
                 content = f.read()
