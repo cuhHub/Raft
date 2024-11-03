@@ -35,48 +35,109 @@
     A service that manages the server's Raft.
 ]]
 ---@class Rafts: NoirService
----@field Raft Raft The server's Raft
+---@field Rafts table<integer, Raft>
+---
+---@field OnTickConnection NoirTask
 Raft.Rafts = Noir.Services:CreateService(
     "Rafts"
 )
+
+Raft.Rafts.InitPriority = 0
+Raft.Rafts.StartPriority = 0
 
 --[[
     Called when the service is initialized.
 ]]
 function Raft.Rafts:ServiceInit()
-    self.Raft = Raft.Classes.Raft:New(matrix.translation(10000, 0, 0), 2)
-    self:SaveRaft()
+    self.Rafts = {} -- this is a table in case i plan on adding multiple rafts
 end
 
 --[[
     Called when the service is started.
 ]]
 function Raft.Rafts:ServiceStart()
-    self:LoadRaft() -- saves if no raft to load
+    -- Load rafts
+    self:LoadRafts()
 
-    if not self.Raft.Vehicle then
-        self.Raft:Spawn()
-        self:SaveRaft()
+    -- Spawn raft vehicles if needed
+    for _, raft in pairs(self:GetRafts()) do
+        if not raft.Vehicle then
+            raft:Spawn()
+        end
     end
+
+    -- Update rafts every tick
+    self.OnTickConnection = Noir.Services.TaskService:AddTickTask(function()
+        for _, raft in pairs(self:GetRafts()) do
+            raft:Update()
+        end
+    end, 1)
 end
 
 --[[
-    Saves the Raft to g_savedata.
+    Register a raft.
 ]]
-function Raft.Rafts:SaveRaft()
-    self:Save("Raft", self.Raft:Serialize())
+---@param raft Raft
+function Raft.Rafts:RegisterRaft(raft)
+    table.insert(self:GetRafts(), raft)
 end
 
 --[[
-    Loads the Raft from g_savedata if possible.
+    Returns all rafts.
 ]]
-function Raft.Rafts:LoadRaft()
-    local data = self:Load("Raft")
+---@return table<integer, Raft>
+function Raft.Rafts:GetRafts()
+    return self.Rafts
+end
 
-    if not data then
-        self:SaveRaft()
+--[[
+    Returns the server's Raft.
+]]
+---@return Raft
+function Raft.Rafts:GetServerRaft()
+    return self.Rafts[0]
+end
+
+--[[
+    Returns all saved rafts.
+]]
+---@return table<integer, RaftSerialized>
+function Raft.Rafts:GetLoadedRafts()
+    local loadedRafts = {}
+
+    for _, raft in pairs(self:GetRafts()) do
+        table.insert(loadedRafts, raft:Serialize())
+    end
+
+    return loadedRafts
+end
+
+--[[
+    Saves all rafts to g_savedata.
+]]
+function Raft.Rafts:SaveRafts()
+    local rafts = {}
+
+    for _, raft in pairs(self:GetRafts()) do
+        table.insert(rafts, raft:Serialize())
+    end
+
+    self:Save("Rafts", rafts)
+end
+
+--[[
+    Loads all rafts from g_savedata if possible.
+]]
+function Raft.Rafts:LoadRafts()
+    local serializedRafts = self:GetLoadedRafts()
+
+    if not serializedRafts then
+        self:SaveRafts()
         return
     end
 
-    self.Raft:FromSerialized(data)
+    for _, serializedRaft in pairs(serializedRafts) do
+        local raft = Raft.Classes.Raft:FromSerialized(serializedRaft)
+        self:RegisterRaft(raft)
+    end
 end
