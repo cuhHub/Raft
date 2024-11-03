@@ -44,20 +44,26 @@ Raft.Rafts = Noir.Services:CreateService(
     Called when the service is initialized.
 ]]
 function Raft.Rafts:ServiceInit()
-    self.Raft = Raft.Classes.Raft:New(matrix.translation(10000, 0, 0), 1)
-
-    if not self.Raft.Vehicle then
-        self.Raft:Spawn()
-    end
-
-    self:LoadRaft()
+    self.Raft = Raft.Classes.Raft:New(matrix.translation(10000, 0, 0), 2)
+    self:SaveRaft()
 end
 
 --[[
     Called when the service is started.
 ]]
 function Raft.Rafts:ServiceStart()
+    self:LoadRaft()
 
+    if not self.Raft.Vehicle then
+        self.Raft:Spawn()
+    end
+end
+
+--[[
+    Saves the Raft to g_savedata.
+]]
+function Raft.Rafts:SaveRaft()
+    self:Save("Raft", self.Raft:Serialize())
 end
 
 --[[
@@ -67,7 +73,7 @@ function Raft.Rafts:LoadRaft()
     local data = self:Load("Raft")
 
     if not data then
-        self:Save("Raft", self.Raft:Serialize())
+        self:SaveRaft()
         return
     end
 
