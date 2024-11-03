@@ -66,8 +66,27 @@ end
     Update this raft. This is to be called every tick.
 ]]
 function Raft.Classes.Raft:Update()
-    self.Vehicle.PrimaryBody:SetBattery("Battery", 100)
-    self.Vehicle.PrimaryBody:SetKeypad("SpeedMultiplier", self.Level / self.MaxLevel)
+    if self.Vehicle then
+        self.Vehicle.PrimaryBody:SetBattery("Battery", 100)
+        self.Vehicle.PrimaryBody:SetKeypad("SpeedMultiplier", self.Level / self.MaxLevel)
+
+        self:UpdateTooltip()
+    end
+end
+
+--[[
+    Update the tooltip of this raft.
+]]
+function Raft.Classes.Raft:UpdateTooltip()
+    if not self.Vehicle then
+        error("Raft", "Attempted to update tooltip when raft is not spawned.")
+    end
+
+    self.Vehicle.PrimaryBody:SetTooltip(table.concat({
+        "Raft",
+        ("Level %d/%d"):format(self.Level, self.MaxLevel),
+        ("Items: %d/%d"):format(self.Storage:GetItemCount(), self.Storage.ItemLimit)
+    }, "\n"))
 end
 
 --[[
@@ -90,7 +109,7 @@ function Raft.Classes.Raft:GetSpawnPoint()
         error("Raft", "Could not find spawn point.")
     end
 
-    return self.Vehicle.PrimaryBody:GetPosition(data.pos.x, data.pos.y, data.pos.z)
+    return Noir.Libraries.Matrix:Offset(self.Vehicle.PrimaryBody:GetPosition(data.pos.x, data.pos.y, data.pos.z), 0, 2.5, 0)
 end
 
 --[[
@@ -103,6 +122,8 @@ function Raft.Classes.Raft:SetLevel()
 
     self.Level = self.Level + 1
     self.OnLevelUp:Fire()
+
+    Raft.Rafts:SaveRafts()
 end
 
 --[[
@@ -115,6 +136,8 @@ function Raft.Classes.Raft:Spawn()
     end
 
     self.Vehicle = Noir.Services.VehicleService:SpawnVehicle(self.ComponentID, self.SpawnPosition)
+    Raft.Rafts:SaveRafts()
+
     return self.Vehicle
 end
 
@@ -150,7 +173,7 @@ function Raft.Classes.Raft:FromSerialized(data)
     raft.Vehicle = data.VehicleID and Noir.Services.VehicleService:GetVehicle(data.VehicleID)
     raft.Level = data.Level
     raft.MaxLevel = data.MaxLevel
-    raft.Storage = data.Storage
+    raft.Storage = Raft.Classes.Storage:FromSerialized(data.Storage)
 
     return raft
 end
