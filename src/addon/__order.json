@@ -1,6 +1,7 @@
 {
     "order" : [
         "init.lua",
+        "framework",
         "classes",
         "libraries",
         "services",
