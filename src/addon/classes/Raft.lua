@@ -41,12 +41,10 @@
 ---@field Vehicle NoirVehicle The vehicle this raft is attached to
 ---@field Level integer The level of the raft
 ---@field MaxLevel integer The maximum level of the raft
----@field Storage nil -- TODO: add storage class
+---@field Storage Storage -- The storage for this raft
 ---
 ---@field OnLevelUp NoirEvent Fired when this Raft levels up
-Raft.Classes.Raft = Noir.Services:CreateService(
-    "Rafts"
-)
+Raft.Classes.Raft = Noir.Class("Raft")
 
 --[[
     Initialize Raft objects.
@@ -59,7 +57,9 @@ function Raft.Classes.Raft:Init(spawnPos, componentID)
     self.Vehicle = nil
     self.Level = 1
     self.MaxLevel = 10
-    self.Storage = nil -- TODO: storage
+    self.Storage = Raft.Classes.Storage:New(50)
+
+    self.OnLevelUp = Noir.Libraries.Events:Create()
 end
 
 --[[
@@ -116,9 +116,9 @@ end
 ---@return RaftSerialized
 function Raft.Classes.Raft:Serialize()
     return {
-        VehicleID = self.Vehicle.ID,
+        VehicleID = self.Vehicle and self.Vehicle.ID,
         Level = self.Level,
-        Storage = self.Storage:Serialize() -- TODO: storage
+        Storage = self.Storage:Serialize()
     }
 end
 
@@ -127,7 +127,7 @@ end
 ]]
 ---@param data RaftSerialized
 function Raft.Classes.Raft:FromSerialized(data)
-    self.Vehicle = Noir.Services.VehicleService:GetVehicle(data.VehicleID)
+    self.Vehicle = data.VehicleID and Noir.Services.VehicleService:GetVehicle(data.VehicleID)
 
     if not self.Vehicle then
         error("Raft", "Could not find vehicle from serialized raft.")
