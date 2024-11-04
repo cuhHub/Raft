@@ -35,13 +35,15 @@
     A class representing a raft in the server.
 ]]
 ---@class Raft: NoirClass
----@field New fun(self: Raft, spawnPos: SWMatrix, componentID: integer): Raft
+---@field New fun(self: Raft, ID: integer, spawnPos: SWMatrix, componentID: integer): Raft
+---@field ID integer
 ---@field SpawnPosition SWMatrix The position of the raft
 ---@field ComponentID integer The component ID of the raft
 ---@field Vehicle NoirVehicle The vehicle this raft is attached to
 ---@field Level integer The level of the raft
 ---@field MaxLevel integer The maximum level of the raft
 ---@field Storage Storage The storage for this raft
+---@field Throttle number The throttle of the raft. >0 will make the raft move
 ---
 ---@field OnLevelUp NoirEvent Fired when this Raft levels up
 Raft.Classes.Raft = Noir.Class("Raft")
@@ -49,15 +51,18 @@ Raft.Classes.Raft = Noir.Class("Raft")
 --[[
     Initialize Raft objects.
 ]]
+---@param ID integer
 ---@param spawnPos SWMatrix
 ---@param componentID integer
-function Raft.Classes.Raft:Init(spawnPos, componentID)
+function Raft.Classes.Raft:Init(ID, spawnPos, componentID)
+    self.ID = 0
     self.SpawnPosition = spawnPos
     self.ComponentID = componentID
     self.Vehicle = nil
     self.Level = 1
     self.MaxLevel = 10
     self.Storage = Raft.Classes.Storage:New(50)
+    self.Throttle = 0
 
     self.OnLevelUp = Noir.Libraries.Events:Create()
 end
@@ -68,7 +73,7 @@ end
 function Raft.Classes.Raft:Update()
     if self.Vehicle then
         self.Vehicle.PrimaryBody:SetBattery("Battery", 100)
-        self.Vehicle.PrimaryBody:SetKeypad("SpeedMultiplier", self.Level / self.MaxLevel)
+        self.Vehicle.PrimaryBody:SetKeypad("Throttle", self.Throttle * (self.Level / (self.MaxLevel / 2)))
 
         self:UpdateTooltip()
     end
@@ -87,6 +92,22 @@ function Raft.Classes.Raft:UpdateTooltip()
         ("Level %d/%d"):format(self.Level, self.MaxLevel),
         ("Items: %d/%d"):format(self.Storage:GetItemCount(), self.Storage.ItemLimit)
     }, "\n"))
+end
+
+--[[
+    Save this raft in the Rafts service.
+]]
+function Raft.Classes.Raft:Save()
+    Raft.Rafts:SaveRaft(self)
+end
+
+--[[
+    Set the throttle of this raft.
+]]
+---@param throttle number
+function Raft.Classes.Raft:SetThrottle(throttle)
+    self.Throttle = throttle
+    self:Save()
 end
 
 --[[
@@ -131,7 +152,7 @@ function Raft.Classes.Raft:SetLevel()
     self.Level = self.Level + 1
     self.OnLevelUp:Fire()
 
-    Raft.Rafts:SaveRafts()
+    self:Save()
 end
 
 --[[
@@ -144,7 +165,7 @@ function Raft.Classes.Raft:Spawn()
     end
 
     self.Vehicle = Noir.Services.VehicleService:SpawnVehicle(self.ComponentID, self.SpawnPosition)
-    Raft.Rafts:SaveRafts()
+    self:Save()
 
     return self.Vehicle
 end
@@ -155,12 +176,14 @@ end
 ---@return RaftSerialized
 function Raft.Classes.Raft:Serialize()
     return {
+        ID = self.ID,
         SpawnPosition = self.SpawnPosition,
         ComponentID = self.ComponentID,
         VehicleID = self.Vehicle and self.Vehicle.ID,
         Level = self.Level,
         MaxLevel = self.MaxLevel,
-        Storage = self.Storage:Serialize()
+        Storage = self.Storage:Serialize(),
+        throttle = self.Throttle
     }
 end
 
@@ -175,13 +198,15 @@ function Raft.Classes.Raft:FromSerialized(data)
         error("Raft", "Cannot create an object from an object.")
     end
 
-    local raft = self:New(data.SpawnPosition, data.ComponentID)
+    local raft = self:New(data.ID, data.SpawnPosition, data.ComponentID)
+    raft.ID = data.ID
     raft.SpawnPosition = data.SpawnPosition
     raft.ComponentID = data.ComponentID
     raft.Vehicle = data.VehicleID and Noir.Services.VehicleService:GetVehicle(data.VehicleID)
     raft.Level = data.Level
     raft.MaxLevel = data.MaxLevel
     raft.Storage = Raft.Classes.Storage:FromSerialized(data.Storage)
+    raft.Throttle = data.Throttle
 
     return raft
 end
@@ -194,9 +219,11 @@ end
     A serialized Raft object.
 ]]
 ---@class RaftSerialized
+---@field ID integer
 ---@field SpawnPosition SWMatrix
 ---@field ComponentID integer
 ---@field VehicleID integer
 ---@field Level integer
 ---@field MaxLevel integer
 ---@field Storage nil -- TODO: storage
+---@field Throttle number
