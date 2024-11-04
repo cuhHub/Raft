@@ -35,7 +35,8 @@
     A service that manages the spawning of players.
 ]]
 ---@class Spawning: NoirService
----@field JoinConnection NoirConnection A connection to the PlayerService's `onJoin` event
+---@field OnJoinConnection NoirConnection A connection to the PlayerService's `OnJoin` event
+---@field OnRespawnConnection NoirConnection A connection to the PlayerService's `OnRespawn` event
 Raft.Spawning = Noir.Services:CreateService(
     "Spawning",
     false,
@@ -50,6 +51,11 @@ Raft.Spawning = Noir.Services:CreateService(
 function Raft.Spawning:ServiceStart()
     ---@param player NoirPlayer
     self.JoinConnection = Noir.Services.PlayerService.OnJoin:Connect(function(player)
+        self:SpawnPlayer(player)
+    end)
+
+    ---@param player NoirPlayer
+    self.RespawnConnection = Noir.Services.PlayerService.OnRespawn:Connect(function(player)
         self:SpawnPlayer(player)
     end)
 
