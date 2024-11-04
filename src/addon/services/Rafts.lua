@@ -57,8 +57,8 @@ Raft.Rafts.StartPriority = 0
 function Raft.Rafts:ServiceInit()
     self.Rafts = {} -- this is a table in case i plan on adding multiple rafts
 
-    self.RAFT_COMPONENT_ID = 3
-    self.DEFAULT_RAFT_SPAWN = matrix.translation(0, 0, 1000)
+    self.RAFT_COMPONENT_ID = 4
+    self.DEFAULT_RAFT_SPAWN = self:GetIdealFishHotspot()
 end
 
 --[[
@@ -86,6 +86,22 @@ function Raft.Rafts:ServiceStart()
             raft:Update()
         end
     end)
+end
+
+--[[
+    Returns the position of the most ideal fish hotspot. This can be used as a raft spawn point for player convenience.
+]]
+---@return SWMatrix
+function Raft.Rafts:GetIdealFishHotspot()
+    local hotspots = server.getFishHotspots()
+
+    table.sort(hotspots, function(a, b)
+        return a.y < b.y
+    end)
+
+
+    local hotspot = hotspots[1]
+    return matrix.translation(hotspot.x, 0, hotspot.z)
 end
 
 --[[
