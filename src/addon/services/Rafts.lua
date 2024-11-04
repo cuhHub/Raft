@@ -56,6 +56,7 @@ Raft.Rafts.StartPriority = 0
 ]]
 function Raft.Rafts:ServiceInit()
     self.Rafts = {} -- this is a table in case i plan on adding multiple rafts
+    self.ID = self:EnsuredLoad("ID", 1)
 
     self.RAFT_COMPONENT_ID = 4
     self.DEFAULT_RAFT_SPAWN = self:GetIdealFishHotspot()
@@ -89,6 +90,17 @@ function Raft.Rafts:ServiceStart()
 end
 
 --[[
+    Returns the current raft ID while also incrementing the ID and saving it/
+]]
+---@return integer
+function Raft.Rafts:GetID()
+    self.ID = self.ID + 1
+    self:Save("ID", self.ID)
+
+    return self.ID
+end
+
+--[[
     Returns the position of the most ideal fish hotspot. This can be used as a raft spawn point for player convenience.
 ]]
 ---@return SWMatrix
@@ -109,7 +121,7 @@ end
 ]]
 ---@param at SWMatrix
 function Raft.Rafts:SpawnRaft(at)
-    local raft = Raft.Classes.Raft:New(at, self.RAFT_COMPONENT_ID)
+    local raft = Raft.Classes.Raft:New(self:GetID(), at, self.RAFT_COMPONENT_ID)
     self:RegisterRaft(raft)
 end
 
@@ -118,7 +130,7 @@ end
 ]]
 ---@param raft Raft
 function Raft.Rafts:RegisterRaft(raft)
-    table.insert(self.Rafts, raft)
+    self.Rafts[raft.ID] = raft
 end
 
 --[[
@@ -145,7 +157,7 @@ function Raft.Rafts:GetSavedRafts()
     local loadedRafts = {}
 
     for _, raft in pairs(self:GetRafts()) do
-        table.insert(loadedRafts, raft:Serialize())
+        loadedRafts[raft.ID] = raft:Serialize()
     end
 
     return loadedRafts
@@ -158,8 +170,19 @@ function Raft.Rafts:SaveRafts()
     local rafts = {}
 
     for _, raft in pairs(self:GetRafts()) do
-        table.insert(rafts, raft:Serialize())
+        rafts[raft.ID] = raft:Serialize()
     end
+
+    self:Save("Rafts", rafts)
+end
+
+--[[
+    Save a specific raft to g_savedata.
+]]
+---@param raft Raft
+function Raft.Rafts:SaveRaft(raft)
+    local rafts = self:GetSavedRafts()
+    rafts[raft.ID] = raft:Serialize()
 
     self:Save("Rafts", rafts)
 end
