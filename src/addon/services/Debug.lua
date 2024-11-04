@@ -72,4 +72,30 @@ function Raft.Debug:CreateCommands()
             Noir.Services.NotificationService:Success("g_savedata", "Printed g_savedata, see logs.", player)
         end
     )
+
+    Noir.Services.CommandService:CreateCommand(
+        "setthrottle",
+        {"th"},
+        {},
+        false,
+        true,
+        false,
+        "Sets the throttle of the main raft",
+
+        function(player, message, args, hasPermission)
+            if not hasPermission then
+                return
+            end
+
+            local throttle = tonumber(args[1])
+
+            if not throttle then
+                Noir.Services.NotificationService:Error("Throttle", "Throttle must be a number.", player)
+                return
+            end
+
+            Raft.Rafts:GetMainRaft():SetThrottle(throttle)
+            Noir.Services.NotificationService:Success("Throttle", ("Set throttle to %d."):format(throttle), player)
+        end
+    )
 end
