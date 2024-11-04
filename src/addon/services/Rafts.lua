@@ -146,7 +146,8 @@ end
 ]]
 ---@return Raft
 function Raft.Rafts:GetMainRaft()
-    return self.Rafts[1]
+    local index = next(self.Rafts)
+    return self.Rafts[index]
 end
 
 --[[
