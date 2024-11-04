@@ -50,6 +50,15 @@ Raft.Weather = Noir.Services:CreateService(
 )
 
 --[[
+    Called when the service is initialized.
+]]
+function Raft.Weather:ServiceInit()
+    self.FogMultiplier = 0.1
+    self.RainMultiplier = 0.1
+    self.WindMultiplier = 0.1
+end
+
+--[[
     Called when the service is started.
 ]]
 function Raft.Weather:ServiceStart()
