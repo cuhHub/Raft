@@ -48,8 +48,7 @@ Raft.Rafts = Noir.Services:CreateService(
     {"Cuh4"}
 )
 
-Raft.Rafts.InitPriority = 0
-Raft.Rafts.StartPriority = 0
+Raft.Rafts.StartPriority = 1
 
 --[[
     Called when the service is initialized.
