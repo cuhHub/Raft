@@ -69,12 +69,21 @@ function Raft.Weather:ServiceStart()
         local level, maxLevel = self:GetRaftLevel()
         local levelMultiplier = level / maxLevel
 
+        self:OverrideWeather()
+
         server.setWeather(
             1 * self.FogMultiplier * levelMultiplier,
             1 * self.RainMultiplier * levelMultiplier,
             0.1
         )
     end)
+end
+
+--[[
+    Allow overriding weather.
+]]
+function Raft.Weather:OverrideWeather()
+    Raft.Settings.Settings.override_weather = true
 end
 
 --[[
