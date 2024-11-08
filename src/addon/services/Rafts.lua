@@ -155,13 +155,7 @@ end
 ]]
 ---@return table<integer, RaftSerialized>
 function Raft.Rafts:GetSavedRafts()
-    local loadedRafts = {}
-
-    for _, raft in pairs(self:GetRafts()) do
-        loadedRafts[raft.ID] = raft:Serialize()
-    end
-
-    return loadedRafts
+    return self:Load("Rafts")
 end
 
 --[[
