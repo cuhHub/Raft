@@ -76,7 +76,7 @@ function Raft.Classes.Raft:Update()
             self.Vehicle = nil
             self:Save()
 
-            error("Raft", "Raft vehicle was despawned")
+            error("Raft", "Raft vehicle was despawned improperly")
         end
 
         -- self:Lock()
@@ -209,6 +209,19 @@ function Raft.Classes.Raft:Spawn()
     self:Save()
 
     return self.Vehicle
+end
+
+--[[
+    Despawn this raft.
+]]
+function Raft.Classes.Raft:Despawn()
+    if self.Vehicle then
+        self.Vehicle:Despawn()
+        self.Vehicle = nil
+        self:Save()
+    end
+
+    Raft.Rafts:UnregisterRaft(self)
 end
 
 --[[

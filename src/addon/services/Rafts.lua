@@ -123,6 +123,15 @@ function Raft.Rafts:RegisterRaft(raft)
 end
 
 --[[
+    Unregister a raft.
+]]
+---@param raft Raft
+function Raft.Rafts:UnregisterRaft(raft)
+    self.Rafts[raft.ID] = nil
+    self:UnsaveRaft(raft)
+end
+
+--[[
     Returns all rafts.
 ]]
 ---@return table<integer, Raft>
@@ -167,6 +176,17 @@ end
 function Raft.Rafts:SaveRaft(raft)
     local rafts = self:GetSavedRafts()
     rafts[raft.ID] = raft:Serialize()
+
+    self:Save("Rafts", rafts)
+end
+
+--[[
+    Remove a raft from g_savedata
+]]
+---@param raft Raft
+function Raft.Rafts:UnsaveRaft(raft)
+    local rafts = self:GetSavedRafts()
+    rafts[raft.ID] = nil
 
     self:Save("Rafts", rafts)
 end
