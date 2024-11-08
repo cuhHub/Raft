@@ -85,6 +85,8 @@ end
 ]]
 ---@param player NoirPlayer
 function Raft.Starter:GiveStarterItems(player)
+    Noir.Services.NotificationService:Info("Starter Items", "You have been given starter items.", player)
+
     for slot, item in pairs(self.StarterItems) do
         player:GetCharacter():GiveItem(slot, item.EquipmentType, false, item.Int, item.Float)
     end
