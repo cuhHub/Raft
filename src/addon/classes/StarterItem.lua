@@ -35,7 +35,7 @@
     A class representing a raft in the server.
 ]]
 ---@class StarterItem: NoirClass
----@field New fun(self: StarterItem, equipmentType: number, int: number, float: number): StarterItem
+---@field New fun(self: StarterItem, equipmentType: SWEquipmentTypeEnum, int: number, float: number): StarterItem
 ---@field EquipmentType SWEquipmentTypeEnum The equipment ID of the starter item.
 ---@field Int integer The integer value of the starter item.
 ---@field Float number The float value of the starter item.
