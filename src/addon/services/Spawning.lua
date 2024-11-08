@@ -73,6 +73,10 @@ end
 function Raft.Spawning:GetSpawnPoint(callback)
     local raft = Raft.Rafts:GetMainRaft()
 
+    if not raft then
+        error("Spawning", "Failed to get main raft.")
+    end
+
     if raft:IsLoaded() then
         return callback(raft:GetSpawnPoint())
     else
