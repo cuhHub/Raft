@@ -183,7 +183,7 @@ function Raft.Classes.Raft:Serialize()
         Level = self.Level,
         MaxLevel = self.MaxLevel,
         Storage = self.Storage:Serialize(),
-        throttle = self.Throttle
+        Throttle = self.Throttle
     }
 end
 
