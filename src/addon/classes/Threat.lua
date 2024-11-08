@@ -36,11 +36,11 @@
 ]]
 ---@class Threat: NoirClass
 ---@field New fun(self: Threat, ID: integer, animalType: SWAnimalTypeEnum, spawnPosition: SWMatrix, size: number): Threat
----@field ID integer
----@field AnimalType SWAnimalTypeEnum
----@field SpawnPosition SWMatrix
----@field Size number
----@field Object NoirObject
+---@field ID integer The ID of the threat.
+---@field AnimalType SWAnimalTypeEnum The animal type of the threat.
+---@field SpawnPosition SWMatrix The spawn position of the threat.
+---@field Size number The size of the threat (0-2x).
+---@field Object NoirObject|nil The object behind the threat.
 Raft.Classes.Threat = Noir.Class("Threat")
 
 --[[
