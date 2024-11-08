@@ -120,6 +120,7 @@ end
 ---@param threat Threat
 function Raft.Threats:UnregisterThreat(threat)
     self.Threats[threat.ID] = nil
+    self:UnsaveThreat(threat)
 end
 
 --[[
@@ -201,6 +202,17 @@ end
 function Raft.Threats:SaveThreat(threat)
     local saved = self:GetSavedThreats()
     saved[threat.ID] = threat:Serialize()
+
+    self:Save("Threats", saved)
+end
+
+--[[
+    Unsave a threat.
+]]
+---@param threat Threat
+function Raft.Threats:UnsaveThreat(threat)
+    local saved = self:GetSavedThreats()
+    saved[threat.ID] = nil
 
     self:Save("Threats", saved)
 end
