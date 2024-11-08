@@ -35,7 +35,7 @@
     A service that manages the game settings.
 ]]
 ---@class Settings: NoirService
----@field Settings table<SWGameSettingEnum, boolean> The settings that the game should use
+---@field Settings SWGameSettings The settings that the game should use
 ---@field OnTickConnection NoirConnection A connection to the onTick game callback
 Raft.Settings = Noir.Services:CreateService(
     "Settings",
@@ -49,9 +49,50 @@ Raft.Settings = Noir.Services:CreateService(
     Called when the service is initialized.
 ]]
 function Raft.Settings:ServiceInit()
+    ---@diagnostic disable-next-line: missing-fields
+    -- self.Settings = {
+    --     photo_mode = true,
+    --     map_show_players = false,
+    --     sharks = true,
+    --     infinite_fuel = true,
+    --     lightning = true,
+    --     show_name_plates = true,
+    --     override_weather = true, -- for weather service
+    --     megalodon = false,
+    --     infinite_money = true,
+    --     -- day_length = 0,
+    --     fast_travel = false,
+    --     cleanup_vehicle = false,
+    --     settings_menu = false,
+    --     settings_menu_lock = true,
+    --     rogue_mode = false,
+    --     ceasefire = false,
+    --     vehicle_damage = false,
+    --     vehicle_spawning = false,
+    --     engine_overheating = true,
+    --     third_person_vehicle = false,
+    --     infinite_ammo = false,
+    --     no_clip = false,
+    --     unlock_all_components = true,
+    --     player_damage = true,
+    --     map_show_vehicles = false,
+    --     despawn_on_leave = true,
+    --     third_person = false,
+    --     infinite_batteries = true,
+    --     teleport_vehicle = true,
+    --     clear_fow = false, -- keep map hidden, let players discover
+    --     npc_damage = true,
+    --     show_3d_waypoints = false,
+    --     map_teleport = false,
+    --     respawning = true,
+    --     unlock_all_islands = true
+    -- }
+
+    -- for testing:
+    ---@diagnostic disable-next-line: missing-fields
     self.Settings = {
         photo_mode = true,
-        map_show_players = false,
+        map_show_players = true,
         sharks = true,
         infinite_fuel = true,
         lightning = true,
@@ -60,18 +101,18 @@ function Raft.Settings:ServiceInit()
         megalodon = false,
         infinite_money = true,
         -- day_length = 0,
-        fast_travel = false,
-        cleanup_vehicle = false,
-        settings_menu = false,
-        settings_menu_lock = true,
+        fast_travel = true,
+        cleanup_vehicle = true,
+        settings_menu = true,
+        settings_menu_lock = false,
         rogue_mode = false,
         ceasefire = false,
         vehicle_damage = false,
-        vehicle_spawning = false,
+        vehicle_spawning = true,
         engine_overheating = true,
         third_person_vehicle = false,
         infinite_ammo = false,
-        no_clip = false,
+        no_clip = true,
         unlock_all_components = true,
         player_damage = true,
         map_show_vehicles = false,
