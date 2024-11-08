@@ -53,8 +53,8 @@ Raft.Threats = Noir.Services:CreateService(
 ]]
 function Raft.Threats:ServiceInit()
     self.MAX_THREATS = 20
-    self.SPAWN_DISTANCE = 1000
-    self.THREAT_SPAWN_INTERVAL = 40
+    self.SPAWN_DISTANCE = 100
+    self.THREAT_SPAWN_INTERVAL = 6
 
     self.Threats = {}
 end
@@ -63,6 +63,8 @@ end
     Called when the service is started.
 ]]
 function Raft.Threats:ServiceStart()
+    self:LoadThreats()
+
     self.ThreatSpawningTask = Noir.Services.TaskService:AddTimeTask(function()
         self:SpawnThreatRandom()
     end, self.THREAT_SPAWN_INTERVAL, nil, true)
@@ -101,7 +103,7 @@ end
 ---@return SWMatrix
 function Raft.Threats:GetRandomPositionAroundPlayer(player)
     local position = player:GetPosition()
-    return Noir.Libraries.Matrix:Offset(Noir.Libraries.Matrix:RandomOffset(position, self.SPAWN_DISTANCE, 0, self.SPAWN_DISTANCE), 0, -25, 0)
+    return Noir.Libraries.Matrix:Offset(Noir.Libraries.Matrix:RandomOffset(position, self.SPAWN_DISTANCE, 0, self.SPAWN_DISTANCE), 0, -10, 0)
 end
 
 --[[
@@ -134,6 +136,8 @@ function Raft.Threats:SpawnThreat(at, animalType, size)
     end
 
     local threat = Raft.Classes.Threat:New(Raft.ID:GetID(), animalType, at, size)
+    threat:Spawn()
+
     self:RegisterThreat(threat)
 
     return threat
