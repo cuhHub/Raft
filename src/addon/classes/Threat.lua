@@ -63,14 +63,25 @@ end
 ]]
 function Raft.Classes.Threat:Spawn()
     self.Object = Noir.Services.ObjectService:SpawnAnimal(self.AnimalType, self.SpawnPosition, self.Size)
+    self:Save()
 end
 
 --[[
     Despawn this threat.
 ]]
 function Raft.Classes.Threat:Despawn()
-    self.Object:Despawn()
+    if self.Object then
+        self.Object:Despawn()
+    end
+
     Raft.Threats:UnregisterThreat(self)
+end
+
+--[[
+    Save this threat.
+]]
+function Raft.Classes.Threat:Save()
+    Raft.Threats:SaveThreat(self)
 end
 
 --[[
