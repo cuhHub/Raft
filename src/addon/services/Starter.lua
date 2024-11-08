@@ -53,11 +53,10 @@ Raft.Starter = Noir.Services:CreateService(
 function Raft.Starter:ServiceInit()
     self.StarterItems = {
         [1] = Raft.StarterItem:New(81, 0, 0), -- fishing rod
-        [2] = Raft.StarterItem:New(81, 2, 0), -- arctic char (fish, flopping)
-        [3] = Raft.StarterItem:New(81, 2, 0), -- arctic char (fish, flopping)
-        [4] = Raft.StarterItem:New(81, 2, 0), -- arctic char (fish, flopping)
-        [5] = Raft.StarterItem:New(81, 4, 0), -- first aid kit (4 charges)
-        [10] = Raft.StarterItem:New(81, 0, 0), -- arctic suit
+        [2] = Raft.StarterItem:New(11, 4, 0), -- first aid kit (4 charges)
+        [3] = Raft.StarterItem:New(84, 2, 0), -- arctic char (fish, flopping)
+        [4] = Raft.StarterItem:New(84, 2, 0), -- arctic char (fish, flopping)
+        [10] = Raft.StarterItem:New(5, 0, 0), -- arctic suit
     }
 end
 
