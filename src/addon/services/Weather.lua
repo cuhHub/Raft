@@ -37,7 +37,6 @@
 ---@class Weather: NoirService
 ---@field FogMultiplier number The fog multiplier
 ---@field RainMultiplier number The rain multiplier
----@field WindMultiplier number The snow multiplier
 ---@field WeatherRandomizerTask NoirTask A task used to randomize the weather
 ---
 ---@field OnTickConnection NoirConnection A connection to the onTick game callback
@@ -55,7 +54,6 @@ Raft.Weather = Noir.Services:CreateService(
 function Raft.Weather:ServiceInit()
     self.FogMultiplier = 0.1
     self.RainMultiplier = 0.1
-    self.WindMultiplier = 0.1
 end
 
 --[[
@@ -65,7 +63,6 @@ function Raft.Weather:ServiceStart()
     self.WeatherRandomizerTask = Noir.Services.TaskService:AddTimeTask(function()
         self:OffsetFog(math.random(-1000, 1000) / 10000)
         self:OffsetRain(math.random(-1000, 1000) / 10000)
-        self:OffsetWind(math.random(-1000, 1000) / 10000)
     end, 2)
 
     self.OnTickConnection = Noir.Callbacks:Connect("onTick", function()
@@ -75,7 +72,7 @@ function Raft.Weather:ServiceStart()
         server.setWeather(
             1 * self.FogMultiplier * levelMultiplier,
             1 * self.RainMultiplier * levelMultiplier,
-            1 * self.WindMultiplier * levelMultiplier
+            0.1
         )
     end)
 end
@@ -103,12 +100,4 @@ end
 ---@param offset number
 function Raft.Weather:OffsetRain(offset)
     self.RainMultiplier = Noir.Libraries.Number:Clamp(self.RainMultiplier + offset, 0, 1)
-end
-
---[[
-    Offset the wind multiplier
-]]
----@param offset number
-function Raft.Weather:OffsetWind(offset)
-    self.WindMultiplier = Noir.Libraries.Number:Clamp(self.WindMultiplier + offset, 0, 1)
 end
