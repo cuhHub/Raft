@@ -100,7 +100,6 @@ function Raft.Rafts:GetIdealFishHotspot()
         return a.y < b.y
     end)
 
-
     local hotspot = hotspots[1]
     return matrix.translation(hotspot.x, 0, hotspot.z)
 end
