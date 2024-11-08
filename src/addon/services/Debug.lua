@@ -80,7 +80,7 @@ function Raft.Debug:CreateCommands()
         false,
         true,
         false,
-        "Despawns all vehicles",
+        "Despawns all vehicles and objects",
 
         function(player, message, args, hasPermission)
             if not hasPermission then
@@ -91,7 +91,11 @@ function Raft.Debug:CreateCommands()
                 vehicle:Despawn()
             end
 
-            Noir.Services.NotificationService:Success("Despawn", "Despawned all vehicles.", player)
+            for _, object in pairs(Noir.Services.ObjectService:GetObjects()) do
+                object:Despawn()
+            end
+
+            Noir.Services.NotificationService:Success("Despawn", "Despawned all vehicles and objects.", player)
         end
     )
 
