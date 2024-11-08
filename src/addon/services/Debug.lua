@@ -74,6 +74,28 @@ function Raft.Debug:CreateCommands()
     )
 
     Noir.Services.CommandService:CreateCommand(
+        "despawn",
+        {"de", "c"},
+        {},
+        false,
+        true,
+        false,
+        "Despawns all vehicles",
+
+        function(player, message, args, hasPermission)
+            if not hasPermission then
+                return
+            end
+
+            for _, vehicle in pairs(Noir.Services.VehicleService:GetVehicles()) do
+                vehicle:Despawn()
+            end
+
+            Noir.Services.NotificationService:Success("Despawn", "Despawned all vehicles.", player)
+        end
+    )
+
+    Noir.Services.CommandService:CreateCommand(
         "setthrottle",
         {"th"},
         {},
