@@ -51,7 +51,9 @@ Raft.Spawning = Noir.Services:CreateService(
 function Raft.Spawning:ServiceStart()
     ---@param player NoirPlayer
     self.JoinConnection = Noir.Services.PlayerService.OnJoin:Connect(function(player)
-        self:SpawnPlayer(player)
+        player:GetCharacter().OnLoad:Once(function() -- wait for character to load to prevent a CTD (gotta love stormworks)
+            self:SpawnPlayer(player)
+        end)
     end)
 
     ---@param player NoirPlayer
