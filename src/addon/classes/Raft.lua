@@ -72,11 +72,52 @@ end
 ]]
 function Raft.Classes.Raft:Update()
     if self.Vehicle then
-        self.Vehicle.PrimaryBody:SetBattery("Battery", 100)
-        self.Vehicle.PrimaryBody:SetKeypad("Throttle", self.Throttle * (self.Level / (self.MaxLevel / 2)))
+        if not self.Vehicle.Spawned then
+            self.Vehicle = nil
+            self:Save()
 
+            error("Raft", "Raft vehicle was despawned")
+        end
+
+        -- self:Lock()
+        self:Reflect()
+        self:Replenish()
         self:UpdateTooltip()
     end
+end
+
+--[[
+    Reflects things like throttle onto the raft.
+]]
+function Raft.Classes.Raft:Reflect()
+    if not self.Vehicle then
+        error("Raft", "Attempted to reflect raft when raft is not spawned.")
+    end
+
+    self.Vehicle.PrimaryBody:SetKeypad("Throttle", self.Throttle)
+end
+
+--[[
+    Keeps the raft replenished (recharges, refuels, etc)
+]]
+function Raft.Classes.Raft:Replenish()
+    if not self.Vehicle then
+        error("Raft", "Attempted to replenish raft when raft is not spawned.")
+    end
+
+    self.Vehicle.PrimaryBody:SetBattery("Battery", 100)
+end
+
+--[[
+    Locks the raft's X and Z axis.
+]]
+function Raft.Classes.Raft:Lock()
+    if not self.Vehicle then
+        error("Raft", "Attempted to lock raft when raft is not spawned.")
+    end
+
+    local pos = self:GetPosition()
+    self.Vehicle:Move(matrix.translation(self.SpawnPosition[13], pos[14], self.SpawnPosition[15]))
 end
 
 --[[
