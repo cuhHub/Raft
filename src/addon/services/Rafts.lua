@@ -90,17 +90,6 @@ function Raft.Rafts:ServiceStart()
 end
 
 --[[
-    Returns the current raft ID while also incrementing the ID and saving it/
-]]
----@return integer
-function Raft.Rafts:GetID()
-    self.ID = self.ID + 1
-    self:Save("ID", self.ID)
-
-    return self.ID
-end
-
---[[
     Returns the position of the most ideal fish hotspot. This can be used as a raft spawn point for player convenience.
 ]]
 ---@return SWMatrix
@@ -121,7 +110,7 @@ end
 ]]
 ---@param at SWMatrix
 function Raft.Rafts:SpawnRaft(at)
-    local raft = Raft.Classes.Raft:New(self:GetID(), at, self.RAFT_COMPONENT_ID)
+    local raft = Raft.Classes.Raft:New(Raft.ID:GetID(), at, self.RAFT_COMPONENT_ID)
     self:RegisterRaft(raft)
 end
 
@@ -155,7 +144,7 @@ end
 ]]
 ---@return table<integer, RaftSerialized>
 function Raft.Rafts:GetSavedRafts()
-    return self:Load("Rafts")
+    return self:EnsuredLoad("Rafts", {})
 end
 
 --[[
