@@ -54,7 +54,7 @@ Raft.Threats = Noir.Services:CreateService(
 function Raft.Threats:ServiceInit()
     self.MAX_THREATS = 20
     self.SPAWN_DISTANCE = 100
-    self.THREAT_SPAWN_INTERVAL = 6
+    self.THREAT_SPAWN_INTERVAL = 32
 
     self.Threats = {}
 end
