@@ -2,6 +2,7 @@
     "order" : [
         "init.lua",
         "framework",
+        "enums",
         "classes",
         "libraries",
         "services",
