@@ -204,7 +204,7 @@ end
 ]]
 ---@param object NoirObject
 function Raft.Loot:RemoveLootObject(object)
-    self:GetSaveData()[object.ID] = nil
+    self:GetSaveData().Loot[object.ID] = nil
 end
 
 --[[
@@ -220,12 +220,14 @@ end
 function Raft.Loot:LoadLootObjects()
     for ID, _ in pairs(self:GetSavedLootObjects()) do
         local object = Noir.Services.ObjectService:GetObject(ID)
+        self:GetSaveData().Loot[ID] = nil
 
         if not object then
             goto continue
         end
 
         object:Despawn()
+
         ::continue::
     end
 end
