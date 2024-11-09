@@ -35,6 +35,7 @@
     A service that manages the weather.
 ]]
 ---@class Weather: NoirService
+---@field WEATHER_RANDOMIZE_INTERVAL number The interval at which to randomize the weather
 ---@field FogMultiplier number The fog multiplier
 ---@field RainMultiplier number The rain multiplier
 ---@field WeatherRandomizerTask NoirTask A task used to randomize the weather
@@ -52,6 +53,7 @@ Raft.Weather = Noir.Services:CreateService(
     Called when the service is initialized.
 ]]
 function Raft.Weather:ServiceInit()
+    self.WEATHER_RANDOMIZE_INTERVAL = 2
     self.FogMultiplier = 0.1
     self.RainMultiplier = 0.1
 end
@@ -61,9 +63,9 @@ end
 ]]
 function Raft.Weather:ServiceStart()
     self.WeatherRandomizerTask = Noir.Services.TaskService:AddTimeTask(function()
-        self:OffsetFog(math.random(-1000, 1000) / 10000)
-        self:OffsetRain(math.random(-1000, 1000) / 10000)
-    end, 2)
+        self:OffsetFog(math.random(-850, 1000) / 5500)
+        self:OffsetRain(math.random(-850, 1000) / 5500)
+    end, self.WEATHER_RANDOMIZE_INTERVAL, nil, true)
 
     self.OnTickConnection = Noir.Callbacks:Connect("onTick", function()
         local level, maxLevel = self:GetRaftLevel()
@@ -100,6 +102,7 @@ end
 ]]
 ---@param offset number
 function Raft.Weather:OffsetFog(offset)
+    print("offsetting fog by %s", offset)
     self.FogMultiplier = Noir.Libraries.Number:Clamp(self.FogMultiplier + offset, 0, 1)
 end
 
