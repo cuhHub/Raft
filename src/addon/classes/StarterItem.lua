@@ -32,14 +32,14 @@
 -------------------------------
 
 --[[
-    A class representing a raft in the server.
+    A class representing a starter item that will be given to players.
 ]]
 ---@class StarterItem: NoirClass
 ---@field New fun(self: StarterItem, equipmentType: SWEquipmentTypeEnum, int: number, float: number): StarterItem
 ---@field EquipmentType SWEquipmentTypeEnum The equipment ID of the starter item.
 ---@field Int integer The integer value of the starter item.
 ---@field Float number The float value of the starter item.
-Raft.StarterItem = Noir.Libraries.Dataclasses:New("StarterItem", {
+Raft.Classes.StarterItem = Noir.Libraries.Dataclasses:New("StarterItem", {
     Noir.Libraries.Dataclasses:Field("EquipmentType", "number"),
     Noir.Libraries.Dataclasses:Field("Int", "number"),
     Noir.Libraries.Dataclasses:Field("Float", "number"),
