@@ -187,14 +187,21 @@ end
 --[[
     Levels this raft up.
 ]]
-function Raft.Classes.Raft:SetLevel()
+function Raft.Classes.Raft:LevelUp()
     if self.Level >= self.MaxLevel then
         return
     end
 
-    self.Level = self.Level + 1
+    self:SetLevel(self.Level + 1)
     self.OnLevelUp:Fire()
+end
 
+--[[
+    Sets the level of this raft
+]]
+---@param level integer
+function Raft.Classes.Raft:SetLevel(level)
+    self.Level = level
     self:Save()
 end
 
