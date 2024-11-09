@@ -124,4 +124,37 @@ function Raft.Debug:CreateCommands()
             Noir.Services.NotificationService:Success("Throttle", ("Set throttle to %d."):format(throttle), player)
         end
     )
+
+    Noir.Services.CommandService:CreateCommand(
+        "setlevel",
+        {"sl"},
+        {},
+        false,
+        true,
+        false,
+        "Sets the level of the main raft",
+
+        function(player, message, args, hasPermission)
+            if not hasPermission then
+                return
+            end
+
+            local level = tonumber(args[1])
+
+            if not level then
+                Noir.Services.NotificationService:Error("Level", "Level must be a number.", player)
+                return
+            end
+
+            local raft = Raft.Rafts:GetMainRaft()
+
+            if level > raft.MaxLevel then
+                Noir.Services.NotificationService:Error("Level", "Level must be less than %d.", player, raft.MaxLevel)
+                return
+            end
+
+            raft:SetLevel(level)
+            Noir.Services.NotificationService:Success("Level", "Level has been set to %d", player, level)
+        end
+    )
 end
