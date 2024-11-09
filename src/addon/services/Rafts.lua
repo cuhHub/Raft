@@ -55,7 +55,6 @@ Raft.Rafts.StartPriority = 1
 ]]
 function Raft.Rafts:ServiceInit()
     self.Rafts = {} -- this is a table in case i plan on adding multiple rafts
-    self.ID = self:EnsuredLoad("ID", 1)
 
     self.RAFT_COMPONENT_ID = 5
     self.DEFAULT_RAFT_SPAWN = self:GetIdealFishHotspot()
