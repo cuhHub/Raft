@@ -201,6 +201,10 @@ end
 ]]
 ---@param level integer
 function Raft.Classes.Raft:SetLevel(level)
+    if level > self.MaxLevel then
+        error("Raft", "Level must be less than %d.", self.MaxLevel)
+    end
+
     self.Level = level
     self:Save()
 end
