@@ -71,19 +71,33 @@ end
     Update this raft. This is to be called every tick.
 ]]
 function Raft.Classes.Raft:Update()
-    if self.Vehicle then
-        if not self.Vehicle.Spawned then
-            self.Vehicle = nil
-            self:Save()
-
-            error("Raft", "Raft vehicle was despawned improperly")
-        end
-
-        -- self:Lock()
-        self:Reflect()
-        self:Replenish()
-        self:UpdateTooltip()
+    if not self.Vehicle then
+        return
     end
+
+    if not self.Vehicle.Spawned then
+        self.Vehicle = nil
+        self:Save()
+
+        error("Raft", "Raft vehicle was despawned improperly")
+    end
+
+    self:Lock()
+    self:Reflect()
+    self:Replenish()
+    self:UpdateTooltip()
+end
+
+--[[
+    Locks the raft's X axis.
+]]
+function Raft.Classes.Raft:Lock()
+    if not self.Vehicle then
+        error("Raft", "Attempted to lock raft when raft is not spawned.")
+    end
+
+    local pos = self:GetPosition()
+    self.Vehicle:Move(matrix.translation(self.SpawnPosition[13], pos[14], pos[15]))
 end
 
 --[[
@@ -106,18 +120,6 @@ function Raft.Classes.Raft:Replenish()
     end
 
     self.Vehicle.PrimaryBody:SetBattery("Battery", 100)
-end
-
---[[
-    Locks the raft's X and Z axis.
-]]
-function Raft.Classes.Raft:Lock()
-    if not self.Vehicle then
-        error("Raft", "Attempted to lock raft when raft is not spawned.")
-    end
-
-    local pos = self:GetPosition()
-    self.Vehicle:Move(matrix.translation(self.SpawnPosition[13], pos[14], self.SpawnPosition[15]))
 end
 
 --[[
