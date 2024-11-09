@@ -31,6 +31,8 @@
 -- // Main
 -------------------------------
 
+-- todo: rewrite
+
 --[[
     A service that manages the spawning of loot.
 ]]
@@ -52,7 +54,7 @@ Raft.Loot = Noir.Services:CreateService(
     "Loot",
     false,
     "Handles the spawning of loot.",
-    "Handles the spawning of loot, as well as moving them towards rafts.",
+    "Handles the spawning of loot, as well as moving them across the ocean.",
     {"Cuh4"}
 )
 
@@ -65,7 +67,7 @@ function Raft.Loot:ServiceInit()
     self.LOOT_SPAWNING_INTERVAL = 32
     self.LOOT_SPAWNING_DISTANCE_RANGE_X = {-25, 25}
     self.LOOT_SPAWNING_DISTANCE_RANGE_Z = {75, 125}
-    self.LOOT_Y = 0.5
+    self.LOOT_Y = 0.02
     self.LOOT_SPEED = 4 / 60
     self.LOOT_LIFETIME = 60
 
@@ -83,9 +85,9 @@ function Raft.Loot:ServiceStart()
     self:LoadLootObjects()
 
     self.LootSpawningTask = Noir.Services.TaskService:AddTimeTask(function()
-        for _, raft in pairs(Raft.Rafts:GetRafts()) do
+        for _, player in pairs(Noir.Services.PlayerService:GetPlayers(true)) do
             for _ = 1, self.LOOT_SPAWNING_AMOUNT do
-                self:SpawnLoot(raft, self:GetRandomLootItem())
+                self:SpawnLoot(player, self:GetRandomLootItem())
             end
         end
     end, self.LOOT_SPAWNING_INTERVAL, nil, true)
@@ -130,16 +132,16 @@ function Raft.Loot:GetRandomLootItem()
 end
 
 --[[
-    Spawn a loot item for a raft.
+    Spawn a loot item.
 ]]
----@param raft Raft
+---@param player NoirPlayer
 ---@param lootItem LootItem
-function Raft.Loot:SpawnLoot(raft, lootItem)
+function Raft.Loot:SpawnLoot(player, lootItem)
     if #self.Loot >= self.MAX_LOOT then
         self:DespawnLootObject(self.Loot[1])
     end
 
-    local object = lootItem:Spawn(self:GetRandomLootPosition(raft))
+    local object = lootItem:Spawn(self:GetRandomLootPosition(player))
 
     if not object then
         error("Loot", "Failed to spawn loot")
@@ -165,11 +167,11 @@ function Raft.Loot:DespawnLootObject(object)
 end
 
 --[[
-    Returns a random loot position for a raft.
+    Returns a random loot position for a player.
 ]]
----@param raft Raft
-function Raft.Loot:GetRandomLootPosition(raft)
-    local position = raft:GetPosition()
+---@param player NoirPlayer
+function Raft.Loot:GetRandomLootPosition(player)
+    local position = player:GetPosition()
     position[14] = self.LOOT_Y
 
     return Noir.Libraries.Matrix:Offset(
@@ -220,9 +222,10 @@ function Raft.Loot:LoadLootObjects()
         local object = Noir.Services.ObjectService:GetObject(ID)
 
         if not object then
-            error("Loot", "Failed to load loot object")
+            goto continue
         end
 
-        table.insert(self.Loot, object)
+        object:Despawn()
+        ::continue::
     end
 end
