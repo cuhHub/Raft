@@ -74,7 +74,7 @@ function Raft.Weather:ServiceStart()
         server.setWeather(
             1 * self.FogMultiplier * levelMultiplier,
             1 * self.RainMultiplier * levelMultiplier,
-            0.1
+            0.02
         )
     end)
 end
