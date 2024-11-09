@@ -40,3 +40,8 @@ Raft = {}
     A table containing classes used throughout the Raft addon.
 ]]
 Raft.Classes = {}
+
+--[[
+    A table containing enums used throughout the Raft addon.
+]]
+Raft.Enums = {}
